@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chloropleth Map</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="nav-brand"> <p style="font-size: 25px;">Beatriz Soares - Geographical Information Systems Labs</div></p>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="page1.html" class="active">Chloropleth Map</a>
+        <a href="page2.html">Digital Elevation Model Map</a>
+        <a href="page3.html">Vegetation Indice Map</a>
+        <a href="page4.html">Image Classification</a>
+        <a href="page5.html">Multicriteria Analysis</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section-card map-frame">
+      <div class="map-panel">
+        <div>
+          <p class="card-highlight">Beatriz de Araujo Possollo Soares</p>
+          <h2>Chloropleth Map</h2>
+          <h3>Sustainable Development Goal 6: Safely managed drinking water around the world</h3>
+          <div class="media-section">
+           <img src="/Users/beatrizsoares/Documents/GIS/Website_Pics/Chloropleth_Map.png" alt="Floodmap of Amsterdam" class="content-image" />
+             <div class="media-body"> </div>
+          <p><p style="text-indent: 40px;">The map displays data from the United Nations on the share of the population with access to safely managed drinking water services by country in 2024. The map correlates to Sustainable Development Goal 6, which mandates "Ensure access to water and sanitation for all," specifically target 6.1, which aims to “By 2030, achieve universal and equitable access to safe and affordable drinking water for all.” The precise indicator used in the model is 6.1.1: “Portion of population using safely managed drinking water services”. It can be seen on the map that various countries are missing data, hence hindering the ability to gain a well-rounded perspective on patterns of water availability around the world. Nonetheless, the countries with the lowest percentages (less than 30%) have been labelled on the map to highlight where water insecurity is most prominent. The lowest of the countries with available data are Tuvalu (10.37%), the Central African Republic (11.25%), and Sierra Leone (12.49%). Except for Australia, Greenland and a handful of European nations, it appears that a majority of the missing data occurs in developing countries, primarily in Africa and South America.</p>
+            <p style="text-indent: 40px;">Chloropleth maps are a mapping approach that utilises colours and shading to represent numerical values and ranges cartographically. Chloropleth maps represent quantitative data rather than qualitative data and are a powerful tool in using visual aids to communicate information at different geographical scales. The use of colour in chloropleth maps can be through gradients (light-to-dark or vice-versa) or through colour differences in hues and saturation, resulting in diverse potential colour schemes. An important element in the creation of chloropleth maps is to take into consideration the significance of colours, since different hues and schemes correlate to different interpretations. For example, a popular colour correlation is green = good, and red = bad, a representation that has been widely used in visual media. Some benefits of chloropleth maps include how easy they are to create, as well as how they are relatively easy to understand, primarily due to people being familiar with the format of chloropleth maps. However, chloropleth maps also have limitations. One of these limitations is the colour symbolization I previously mentioned. Another includes the need for normalising absolute values and the unreliability of estimating values based on colours when reading chloropleth maps. Moreover, many chloropleth maps are problematic for individuals who suffer from colour-blindness since the symbolism and use of differing gradients and colour schemes become less clear depending on the degree and type of colour blindness. To overcome this issue, specific colour palettes have been developed in GIS systems to accommodate individuals with colour-blindness complications.</p>
+            <p style="text-indent: 40px;">Throughout the process of making this map, I was met with various challenges that I was forced to overcome and handle. For starters, I had never worked in QGIS before, so becoming accustomed to the layout and workings of importing data and formatting it required a lot of patience as well as reading the instructions carefully (and over and over again). Moreover, the second part of the assignment often stumped me due to my lack of experience with coding and website creation. However, I feel like now I have gained crucial skills in cleaning data, formatting and blending different data sets to create maps, especially chloropleth maps, that are logical and well-organised. The new technical skills I have improved upon revolve primarily around understanding new GIS systems and integrating global data in digestible forms of media (a choropleth map). Additionally, although this is not a technical skill, this project has underlined how important and useful teamwork, collaborative skills and asking for help can be, since many of us were unfamiliar with the new systems and tried our best to support and aid each other when possible. Overall, although the process of making this map was not inherently the easiest for me at times, I felt that it was a great lesson in understanding more about geographic information systems and has made me feel more confident in tackling the future projects that this class brings. Specifically, I feel I have gained valuable skills in web mapping and cartographic design, and I hope to improve more on my understanding of geodatabases and management of metadata.</p>
+          <h3>Interactive Chloropleth Map of SDG 6 <i>(target 6.1, indicator 6.1.1)</i> in 2024</h3>
+          </div>
+
+        <div id="map"></div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-block">
+          <strong>Tip</strong>
+          Hover over a country to see its name and the percent of population using safely managed drinking water services.
+        </div>
+        <div class="info-block">
+          <strong>Data source</strong>
+          The map uses data collected by the United Nations (UN Data) on the sixth Sustainable Development Goal.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Interactive map powered by Leaflet and UN dataset.
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="Data.js"></script>
+  <script>
+    const map = L.map('map').setView([10, 10], 2);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const info = L.control();
+    info.onAdd = function () {
+      this._div = L.DomUtil.create('div', 'info');
+      this.update();
+      return this._div;
+    };
+
+    info.update = function (props) {
+      const value = props ? props.SH_H2O_SAFE_2024 : null;
+      const displayValue = value !== null && value !== undefined ? `${value.toFixed(2)}%` : 'No data available';
+      this._div.innerHTML = `
+        <h4>Proportion of population using safely managed drinking water services</h4>
+        ${props ? `<b>${props.nam_en}</b><br>${displayValue}` : 'Hover over a country to inspect the data.'}
+      `;
+    };
+
+    info.addTo(map);
+
+    function getColor(d) {
+      return d >= 100 ? '#031C44' :
+             d > 90 ? '#052E70' :
+             d > 80 ? '#07409C' :
+             d > 70 ? '#0952C8' :
+             d > 60 ? '#0B64F4' :
+             d > 50 ? '#2776F5' :
+             d > 40 ? '#639CF8' :
+             d > 30 ? '#8FB8FA' :
+             d > 20 ? '#BBD4FC' :
+             d > 10 ? '#E7F0FE' : '#C5C6C7';
+    }
+
+    function style(feature) {
+      return {
+        weight: 1,
+        opacity: 1,
+        color: '#1E2A56',
+        dashArray: '1',
+        fillOpacity: 0.78,
+        fillColor: getColor(feature.properties.SH_H2O_SAFE_2024)
+      };
+    }
+
+    function highlightFeature(e) {
+      const layer = e.target;
+      layer.setStyle({
+        weight: 3,
+        color: '#fde047',
+        dashArray: '',
+        fillOpacity: 0.9
+      });
+      layer.bringToFront();
+      info.update(layer.feature.properties);
+    }
+
+    function resetHighlight(e) {
+      geojson.resetStyle(e.target);
+      info.update();
+    }
+
+    function zoomToFeature(e) {
+      map.fitBounds(e.target.getBounds());
+    }
+
+    function onEachFeature(feature, layer) {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+      });
+    }
+
+    const geojson = L.geoJson(nationData, {
+      style,
+      onEachFeature
+    }).addTo(map);
+
+    map.attributionControl.addAttribution('SDG data &copy; <a href="https://unstats-undesa.opendata.arcgis.com/">UN SDG DataHub</a>');
+
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'legend');
+      const grades = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90];
+      const labels = [];
+      for (let i = 0; i < grades.length; i++) {
+        const from = grades[i];
+        const to = grades[i + 1];
+        labels.push(
+          `<i style="background:${getColor(from + 1)}"></i> ${from}${to ? `&ndash;${to}` : '+'}`
+        );
+      }
+      labels.push(`<i style="background:#ffffff; border: 1px solid #ccc"></i> No data`);
+      div.innerHTML = labels.join('<br>');
+      return div;
+    };
+
+    legend.addTo(map);
+  </script>
+</body>
+</html>
